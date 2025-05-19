@@ -56,6 +56,7 @@ GROUP BY
   DATETRUNC('month', date)
 ORDER BY
   country;
+  
 📊 ผลลัพธ์จาก AI SQL:
 
 🔹 country: Australia
@@ -66,6 +67,9 @@ ORDER BY
 
 🔹 country: Australia
 🔹 averagemonthlysales: 4681.5000000000000000
+
+⚠️ข้อจำกัดของ Telegram Bots:
+ข้อความ (text message) ที่ส่งได้ มีขนาดไม่เกิน 4096 ตัวอักษร (characters)
 
 **Including the SQL used:**
 
