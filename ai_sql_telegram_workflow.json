@@ -1,0 +1,447 @@
+{
+  "name": "ai-sql-telegram-workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "c5a6f332-5fd4-4707-9950-07e273dbfd17",
+      "name": "Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        60,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "1_WQWcggYl6EE3rmPT2Oq7ww5ls9TiPG8sgf4QCYXl2s",
+          "mode": "list",
+          "cachedResultName": "Chcolate analysis",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_WQWcggYl6EE3rmPT2Oq7ww5ls9TiPG8sgf4QCYXl2s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 639737696,
+          "mode": "list",
+          "cachedResultName": "Chocolate Sales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_WQWcggYl6EE3rmPT2Oq7ww5ls9TiPG8sgf4QCYXl2s/edit#gid=639737696"
+        },
+        "options": {}
+      },
+      "id": "1ef67bad-c109-4f28-82be-7843ec9ac5fd",
+      "name": "Read Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        280,
+        100
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "UIoMII05ZifofVn7",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => {\n  return {\n    json: {\n      sales_person: item.json['Sales Person'],\n      country: item.json['Country'],\n      product: item.json['Product'],\n      date: new Date(item.json['Date']).toISOString().split('T')[0],\n      amount: parseFloat(item.json['Amount'].replace('$','').replace(',','')),\n      boxes_shipped: parseInt(item.json['Boxes Shipped'])\n    }\n  }\n});"
+      },
+      "id": "c85846fc-6b6e-4a25-954f-bbfe4a46fce8",
+      "name": "Transform Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        480,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "table": "employee",
+        "columns": "sales_person:text,country:text,product:text,date:date,amount:int,boxes_shipped:int",
+        "additionalFields": {}
+      },
+      "id": "a7f7aeaf-28d8-4ca6-8118-e436f12867be",
+      "name": "Insert to PostgreSQL",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        680,
+        100
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "bedgbtnswc0msOO6",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Sync Google Sheets to PostgreSQL",
+        "height": 280,
+        "width": 900,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "407ddb4e-b224-4a2a-81fa-100e54f07de4",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        100,
+        400
+      ],
+      "id": "1bdf8c3a-4890-4404-9ff8-f1511ddd6c95",
+      "name": "📩 Telegram Trigger",
+      "webhookId": "49d09a8a-b418-4ea1-acdf-66ba57304940",
+      "credentials": {
+        "telegramApi": {
+          "id": "JHnIzfrr4N29qP5t",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const question = $json.message.text;\nreturn [{ json: { question } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        340,
+        400
+      ],
+      "id": "7824d8a7-35e8-4f3e-aab5-cbba6bb31ddd",
+      "name": "🧠 Extract User Question"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOU API KEY",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"คุณคือผู้เชี่ยวชาญ SQL สำหรับ PostgreSQL\\n\\nคำถาม: {{$json.question}}\\n\\nตารางชื่อ sales มี column: sales_person, country, product, date, amount, boxes_shipped\\n\\nเขียน SQL query ให้หน่อย ตอบมาเฉพาะ query เท่านั้น\"\n        }\n      ]\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        540,
+        400
+      ],
+      "id": "3d74ea5a-3bd5-47a7-9b74-3e1f99a55414",
+      "name": "🤖 Gemini SQL Generator"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = items[0].json.candidates?.[0]?.content?.parts?.[0]?.text || '';\nconst cleaned = raw\n  .replace(/```sql|```/gi, '')  // ลบ backticks และ sql tags\n  .replace(/^sql\\s*/i, '')      // ลบ 'sql' ที่ขึ้นต้น\n  .trim();\n\nif (!cleaned.toLowerCase().startsWith('select')) {\n  throw new Error('ขออภัย! อนุญาตเฉพาะคำสั่ง SELECT เท่านั้น');\n}\n\nreturn [{ json: { sql: cleaned } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        760,
+        400
+      ],
+      "id": "1270f439-0fda-4c03-8f53-af8f7d3843ea",
+      "name": "📄 Extract SQL Only"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.sql }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        980,
+        400
+      ],
+      "id": "d4e680f4-d937-49f9-ae29-c8d7526f7603",
+      "name": "🧮 Run SQL on DB",
+      "credentials": {
+        "postgres": {
+          "id": "bedgbtnswc0msOO6",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let text = '📊 ผลลัพธ์จาก AI SQL:\\n\\n';\nfor (const item of items) {\n  for (const [key, value] of Object.entries(item.json)) {\n    text += `🔹 ${key}: ${value}\\n`;\n  }\n  text += '\\n';\n}\nreturn [{ json: { text } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        400
+      ],
+      "id": "f7cab4a6-a663-4247-a471-3e078cbf2a42",
+      "name": "📬 Format Result for Telegram"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('📩 Telegram Trigger').first().json.message.chat.id }}",
+        "text": "={{ $json.text }}\n🧠 SQL Query:\n{{ $('📄 Extract SQL Only').first().json.sql }}\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1520,
+        400
+      ],
+      "id": "21076e22-e854-43f5-bd0a-327f06ee2742",
+      "name": "📤 Send Result to Telegram",
+      "webhookId": "2ecf183b-b8f7-47d8-bd59-0e048b3afb60",
+      "credentials": {
+        "telegramApi": {
+          "id": "JHnIzfrr4N29qP5t",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// คืนค่าข้อมูลดิบแยก row แยก column\nreturn items;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        620
+      ],
+      "id": "c4a023f5-422d-459b-9ca8-f12f7e684800",
+      "name": "📊 Format Result for Google Sheets"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1URT2N_kCwnRtxS1SSlgLb-HaL9nE7wfcHpjWvDCp670",
+          "mode": "list",
+          "cachedResultName": "Query data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1URT2N_kCwnRtxS1SSlgLb-HaL9nE7wfcHpjWvDCp670/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "query1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1URT2N_kCwnRtxS1SSlgLb-HaL9nE7wfcHpjWvDCp670/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "sales_person"
+          ],
+          "schema": [
+            {
+              "id": "sales_person",
+              "displayName": "sales_person",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "total_sales",
+              "displayName": "total_sales",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1540,
+        620
+      ],
+      "id": "013ca9d3-7402-4a85-bdfe-bb5f162514cc",
+      "name": "📈 Append to Google Sheets",
+      "credentials": {
+        "googleApi": {
+          "id": "UIoMII05ZifofVn7",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Chat-based Data Query and Logging \n",
+        "height": 500,
+        "width": 1760,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        300
+      ],
+      "id": "856a4d40-2f5e-455e-8294-1cfb842f4a26",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Read Google Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Google Sheet": {
+      "main": [
+        [
+          {
+            "node": "Transform Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Data": {
+      "main": [
+        [
+          {
+            "node": "Insert to PostgreSQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📩 Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "🧠 Extract User Question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧠 Extract User Question": {
+      "main": [
+        [
+          {
+            "node": "🤖 Gemini SQL Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🤖 Gemini SQL Generator": {
+      "main": [
+        [
+          {
+            "node": "📄 Extract SQL Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📄 Extract SQL Only": {
+      "main": [
+        [
+          {
+            "node": "🧮 Run SQL on DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧮 Run SQL on DB": {
+      "main": [
+        [
+          {
+            "node": "📬 Format Result for Telegram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "📊 Format Result for Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📬 Format Result for Telegram": {
+      "main": [
+        [
+          {
+            "node": "📤 Send Result to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Format Result for Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "📈 Append to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8e7893d1-a1a2-4114-a410-34b917979e2c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6990182082a6b7018833e9524a479cf112ea44f70c28dca559881d9c7b1294fb"
+  },
+  "id": "PPHGltlnCY7mnH1y",
+  "tags": []
+}
