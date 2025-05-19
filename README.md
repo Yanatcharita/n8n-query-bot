@@ -37,6 +37,9 @@ This project began with a simple idea — I wanted a smart assistant that could 
 
 ## 📦 Example Telegram Command
 
+![image](https://github.com/user-attachments/assets/49493a72-eb5b-4d24-a7c5-b76ad283f48b)
+
+
 **User sends:**  
 > ยอดขายรวมของแต่ละพนักงานคือเท่าไหร่
 
