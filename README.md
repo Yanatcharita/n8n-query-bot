@@ -36,26 +36,36 @@ This project began with a simple idea — I wanted a smart assistant that could 
 ---
 
 ## 📦 Example Telegram Command
+![image](https://github.com/user-attachments/assets/d9341fe7-52dc-489f-8ecb-c940f8362011)
 
-![image](https://github.com/user-attachments/assets/49493a72-eb5b-4d24-a7c5-b76ad283f48b)
 
 
 **User sends:**  
-> ยอดขายรวมของแต่ละพนักงานคือเท่าไหร่
+> จำนวนยอดขายเฉลี่ยต่อเดือนในแต่ละประเทศ
 
 **Bot replies with something like:**  
 👩‍💼 Total Sales by Employee:
-
+✨ SQL Query:
+SELECT
+  country,
+  AVG(amount) AS averagemonthlysales
+FROM
+  sales
+GROUP BY
+  country,
+  DATETRUNC('month', date)
+ORDER BY
+  country;
 📊 ผลลัพธ์จาก AI SQL:
 
-🔹 salesperson: Marney O'Breen
-🔹 totalsales: 519484
+🔹 country: Australia
+🔹 averagemonthlysales: 5204.2500000000000000
 
-🔹 salesperson: Beverie Moffet
-🔹 totalsales: 557844
+🔹 country: Australia
+🔹 averagemonthlysales: 6028.0500000000000000
 
-🔹 salesperson: Barr Faughny
-🔹 totalsales: 517426
+🔹 country: Australia
+🔹 averagemonthlysales: 4681.5000000000000000
 
 **Including the SQL used:**
 
