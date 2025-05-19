@@ -1,4 +1,5 @@
-# n8n-query-bot 
+
+
 # 🧠 AI-Powered SQL Query via Telegram + Google Sheets Integration (n8n Workflow)
 
 This project is an end-to-end automation built with **n8n**, which allows users to:
