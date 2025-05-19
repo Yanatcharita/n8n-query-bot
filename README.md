@@ -23,8 +23,7 @@ This project began with a simple idea — I wanted a smart assistant that could 
 ---
 
 ## 🧩 How It Works (Workflow Summary)
-
-![image](https://github.com/user-attachments/assets/66a6c253-5dc6-4a8b-9b02-d0720575f1c7)
+![image](https://github.com/user-attachments/assets/444f9177-0755-495d-bfb2-082d29665489)
 
 
 1. **📩 Telegram Trigger** – User sends a question via Telegram.
@@ -77,16 +76,10 @@ DB_PASSWORD	PostgreSQL password
 AI_API_KEY	API Key for Gemini or GPT
 
 🙋‍♀️ Future Improvements
-Better understanding of natural Thai language (advanced syntax and idioms).
+- Better understanding of natural Thai language (advanced syntax and idioms).
 
-Add quick reply buttons for common queries in Telegram.
+- Enhance AI accuracy using MCP (Many-shot Context Prompting):
 
-Support voice-to-text input via Telegram.
+  - Provide a list of example questions with their SQL counterparts.
 
-Return chart or visual summary along with data (via image or link).
-
-Enhance AI accuracy using MCP (Many-shot Context Prompting):
-
-Provide a list of example questions with their SQL counterparts.
-
-Helps guide the AI to produce better results through contextual learning.
+  - Helps guide the AI to produce better results through contextual learning.
