@@ -38,24 +38,13 @@ This project began with a simple idea — I wanted a smart assistant that could 
 ยอดขายรวมของแต่ละพนักงานคือเท่าไหร่
 
 ✨ The workflow sends this to Gemini, which returns:
-
-sql
-Copy
-Edit
-SELECT sales_person, SUM(amount) AS total_sales
-FROM employee
-GROUP BY sales_person;
-Then the result is returned to Telegram and appended to the output Google Sheet.
-
-sql
-Copy
-Edit
-
 And may include the SQL query used:
 ```sql
 SELECT "Sales Person", SUM(amount) AS total_sales
 FROM sales
 GROUP BY "Sales Person";
+
+
 ⚙️ Setup Instructions
 Create a Telegram Bot and connect it to n8n using the API token.
 
@@ -73,7 +62,8 @@ DB_USER	PostgreSQL user
 DB_PASSWORD	PostgreSQL password
 AI_API_KEY	API Key for Gemini or GPT
 
-🙋‍♀️ Future Improvements
+
+Future Improvements
 Better understanding of natural Thai language (advanced syntax).
 
 Support voice-to-text input via Telegram.
