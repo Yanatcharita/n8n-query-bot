@@ -46,22 +46,24 @@ This project began with a simple idea — I wanted a smart assistant that could 
 **Bot replies with something like:**  
 👩‍💼 Total Sales by Employee:
 
-Alice: ฿1,200,000
+📊 ผลลัพธ์จาก AI SQL:
 
-Bob: ฿950,000
+🔹 salesperson: Marney O'Breen
+🔹 totalsales: 519484
 
-Charlie: ฿870,000
+🔹 salesperson: Beverie Moffet
+🔹 totalsales: 557844
 
-pgsql
-Copy
-Edit
+🔹 salesperson: Barr Faughny
+🔹 totalsales: 517426
 
 **Including the SQL used:**
-```sql
+
 SELECT "Sales Person", SUM(amount) AS total_sales
 FROM sales
-GROUP BY "Sales Person";
-⚙️ Setup Instructions
+GROUP BY "Sales Person"; 
+ 
+## ⚙️ Setup Instructions
 Create a Telegram Bot and connect it to n8n using the API token.
 
 Set up credentials for PostgreSQL and Google Sheets in n8n.
@@ -70,7 +72,7 @@ Import the n8n workflow JSON file.
 
 Customize the nodes: AI provider (Gemini/GPT), database schema, Google Sheet ID, etc.
 
-🔐 Environment Variables
+## 🔐 Environment Variables
 Variable Name	Description
 TELEGRAM_TOKEN	Telegram Bot API Token
 DB_HOST	PostgreSQL host
@@ -78,7 +80,7 @@ DB_USER	PostgreSQL user
 DB_PASSWORD	PostgreSQL password
 AI_API_KEY	API Key for Gemini or GPT
 
-🙋‍♀️ Future Improvements
+## 🙋‍♀️ Future Improvements
 - Better understanding of natural Thai language (advanced syntax and idioms).
 
 - Enhance AI accuracy using MCP (Many-shot Context Prompting):
