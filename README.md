@@ -24,27 +24,41 @@ This project began with a simple idea — I wanted a smart assistant that could 
 
 ## 🧩 How It Works (Workflow Summary)
 
+![image](https://github.com/user-attachments/assets/66a6c253-5dc6-4a8b-9b02-d0720575f1c7)
+
+
 1. **📩 Telegram Trigger** – User sends a question via Telegram.
 2. **🧠 AI Generate SQL** – The question is sent to Gemini/GPT for SQL conversion.
 3. **🗃️ Execute SQL** – SQL is run on the PostgreSQL database.
 4. **📝 Format Result** – The result is formatted for readability.
 5. **📬 Send Back to Telegram** – The answer is sent back via Telegram.
-6. (Optional) **📤 Save to Google Sheets** – Log and results are stored for future reference.
+6. *(Optional)* **📤 Save to Google Sheets** – Log and results are stored for future reference.
 
 ---
 
 ## 📦 Example Telegram Command
 
-ยอดขายรวมของแต่ละพนักงานคือเท่าไหร่
+**User sends:**  
+> ยอดขายรวมของแต่ละพนักงานคือเท่าไหร่
 
-✨ The workflow sends this to Gemini, which returns:
-And may include the SQL query used:
+**Bot replies with something like:**  
+👩‍💼 Total Sales by Employee:
+
+Alice: ฿1,200,000
+
+Bob: ฿950,000
+
+Charlie: ฿870,000
+
+pgsql
+Copy
+Edit
+
+**Including the SQL used:**
 ```sql
 SELECT "Sales Person", SUM(amount) AS total_sales
 FROM sales
 GROUP BY "Sales Person";
-
-
 ⚙️ Setup Instructions
 Create a Telegram Bot and connect it to n8n using the API token.
 
@@ -62,10 +76,17 @@ DB_USER	PostgreSQL user
 DB_PASSWORD	PostgreSQL password
 AI_API_KEY	API Key for Gemini or GPT
 
+🙋‍♀️ Future Improvements
+Better understanding of natural Thai language (advanced syntax and idioms).
 
-Future Improvements
-Better understanding of natural Thai language (advanced syntax).
+Add quick reply buttons for common queries in Telegram.
 
 Support voice-to-text input via Telegram.
 
-Improve AI accuracy using MCP (Many-shot Context Prompting) to provide examples of question-to-SQL conversions, helping the model learn from context.
+Return chart or visual summary along with data (via image or link).
+
+Enhance AI accuracy using MCP (Many-shot Context Prompting):
+
+Provide a list of example questions with their SQL counterparts.
+
+Helps guide the AI to produce better results through contextual learning.
